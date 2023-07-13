@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  debug:
+    build:
+        context: .
+        dockerfile: docker/develop/Dockerfile
+    ports:
+        - "3000:3000"
+    volumes:
+        - .:/app
+    command: ["npm", "run", "start:dev"]
+  deploy:
+    profiles: ["deploy"]
+    build:
+      context: .
+      dockerfile: docker/deploy/Dockerfile
+    environment:
+      - AWS_PROFILE=default
+    volumes:
+      - .:/app
+      - ~/.aws/:/root/.aws:ro
+    command: [ "npm", "run", "build:serverless:deploy" ]
